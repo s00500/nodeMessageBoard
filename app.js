@@ -1,22 +1,32 @@
-console.log("hello world\r");
+var server = require("./server");
+var router = require("./route");
+var requestHandlers = require("./requestHandlers");
 
-var http = require("http");
-var server = http.createServer(function(request, response) {
-  response.writeHead(200, {"Content-Type": "text/html"});
-  response.write("<!DOCTYPE 'html'>");
-  response.write("<html>");
-  response.write("<head>");
-  response.write("<title>Hello World Page</title>");
-  response.write("</head>");
-  response.write("<body>");
-  response.write("Hello World!");
-  response.write("</body>");
-  response.write("</html>");
-  response.end();
+var debug = false;
+
+var handle = {}
+handle["/"] = requestHandlers.sendInterface;
+handle["/interface"] = requestHandlers.sendInterface;
+
+server.start(router.route,handle,debug);
+
+
+
+
+// old app.js
+/*
+console.log("hello world\r");
+var port = 3000;
+var express = require('express')
+var app = express()
+
+app.get('/', function (req, res) {
+  res.send('Hello World')
 });
 
-server.listen(5000);
-console.log("Server is listening");
+app.listen(port, function () {
+  console.log('Example app listening on port '+port+'!');
+});
 
 var serialport = require("serialport");
 var SerialPort = serialport.SerialPort;
@@ -30,7 +40,12 @@ serialPort.on("open", function () {
   console.log('open');
 serialPort.on("data", function (data) {
   console.log("here: "+data);
+
+  app.get('/', function (req, res) {
+    res.send(data)
+  })
 });
 
 serialPort.write("AT+CPIN?\r");
 });
+*/
