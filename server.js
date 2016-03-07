@@ -44,15 +44,11 @@ function initSocketIO(httpServer,debug)
 	socketServer.on('update', function(data) {
 	socket.emit('updateData',{pollOneValue:data});
 	});
-	socket.on('buttonval', function(data) {
+	socket.on('sendAT', function(data) {
 		serialPort.write('AT\r');
-		console.log('sending:..');
+		console.log('sending AT...');
 	});
-	socket.on('sliderval', function(data) {
-		serialPort.write(data + 'P');
-	});
-
-    });
+ });
 }
 
 // Listen to serial port
@@ -71,12 +67,15 @@ function serialListener(debug)
         serialPort.on('data', function(data) {
              //receivedData += data.toString();
           //if (receivedData .indexOf('E') >= 0 && receivedData .indexOf('B') >= 0) {
-           sendData = '50'; //.substring(receivedData .indexOf('B') + 1, receivedData .indexOf('E'));
+           sendData = data; //.substring(receivedData .indexOf('B') + 1, receivedData .indexOf('E'));
            receivedData = '';
 					 console.log('server event happening..' + data + '.\r');
          //}
          // send the incoming data to browser with websockets.
-       socketServer.emit('update', sendData);
+       //socketServer.emit('update', sendData);
+
+			 //if is message and is parsed
+			 socketServer.emit('newMessage', sendData);
       });
 			//setTimeout(sendPin,500);
 			serialPort.write('AT+CPIN=3797\r');

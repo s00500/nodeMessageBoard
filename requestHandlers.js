@@ -8,7 +8,7 @@ server = require('./server');
 function sendInterface(response) {
   console.log("Request handler 'interface' was called.");
   response.writeHead(200, {"Content-Type": "text/html"});
-  var html = fs.readFileSync(__dirname + "board.html")
+  var html = fs.readFileSync(__dirname + "/board.html")
   response.end(html);
 }
 
