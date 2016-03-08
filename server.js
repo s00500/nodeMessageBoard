@@ -10,6 +10,7 @@ var socketServer;
 var serialPort;
 var portName = '/dev/tty.usbmodemFD121'; //change this to your Arduino port
 var sendData = "";
+var numberRecieved = "";
 
 // handle contains locations to browse to (vote and poll); pathnames.
 function startServer(route,handle,debug)
@@ -63,29 +64,32 @@ function serialListener(debug)
     serialPort.on("open", function () {
       console.log('opened serial communication');
 
-            // Listens to incoming data
         serialPort.on('data', function(data) {
-             //receivedData += data.toString();
-          //if (receivedData .indexOf('E') >= 0 && receivedData .indexOf('B') >= 0) {
-           sendData = data; //.substring(receivedData .indexOf('B') + 1, receivedData .indexOf('E'));
-           receivedData = '';
-					 console.log('server event happening..' + data + '.\r');
-         //}
-         // send the incoming data to browser with websockets.
-       //socketServer.emit('update', sendData);
+					console.log('Incomming serial data...\r');
+					console.log(data);
+					console.log("\r"); //+data.length
+				 // send the incoming data to clients using the socket.
+		    if(data.startsWith("+CMT:")){ // if message ok
+					numberRecieved = data;
+				} else if (data.length > 1) {
+					//add a new message to the board directly
+					if(numberRecieved){
+						console.log("emit");
+           socketServer.emit('newMessage', numberRecieved+" "+data);
+					 numberRecieved = null;
+				  }
+				  else {
+          console.log("nothing");
+				  }
+        } else {
+					//debugMessages trigger an alert on the clients
+		 	    //socketServer.emit('debugMessage', data);
+		      }
+        });
 
-			 //if is message and is parsed
-			 socketServer.emit('newMessage', sendData);
-      });
-			//setTimeout(sendPin,500);
 			serialPort.write('AT+CPIN=3797\r');
 			console.log("Sent Pincode...");
     });
-}
-
-function sendPin(){
-serialPort.write('AT+CPIN=3797\r');
-console.log("Sent Pincode...");
 }
 
 
