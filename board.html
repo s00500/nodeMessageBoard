@@ -1,46 +1,19 @@
 <!DOCTYPE html>
  <meta charset="UTF-8">
  <html>
-   <head>
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
-    <style>
-	body {
-		margin: 0px;
-		padding: 0px;
-        }
-	#rData{
-		float:left;
-		margin-left:100px;
-		margin-right:auto;
-		width:470px;
-	}
-	#sData{
-		float: left;
-		margin-left:100px;
-		margin-right:auto;
-		width:470px;
-	}
-	h2{
-		text-align:center;
-	}
-        #myCanvas {
-		border: 2px dashed grey;
-        }
-	#btnHolder, #sliderTxt{
-	text-align:center;
-	}
-    </style>
+  <head>
+
+  <!--<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />-->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
   <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
 	<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
-	<script src="/socket.io/socket.io.js"></script>
-    <script>
+	<script src="/socket.io/socket.io.js">
+  </script>
 
+<script>
   const toDisplay = 5; //define the number of messages to show
-
-	var iosocket;
+  var iosocket;
   var currentMessageCount = 0;
-	//var onOff = false;
-	var toggleVal = 0;
 
 
 
@@ -55,13 +28,14 @@
 		});
 
      iosocket.on('newMessage', function(time,number,message) {
+       var censoredNumber = number.substring(0,3) + "********" +number.substring(number.length - 3, number.length);
        var mainTable = document.getElementById("mainTable");
        var newRow = mainTable.insertRow(mainTable.rows.length);
        var dateCell = newRow.insertCell(0);
        var numberCell = newRow.insertCell(1);
        var textCell = newRow.insertCell(2);
        dateCell.innerHTML = time;
-       numberCell.innerHTML = number;
+       numberCell.innerHTML = censoredNumber;
        textCell.innerHTML = message;
        currentMessageCount++;
        if(currentMessageCount > toDisplay)
@@ -83,32 +57,33 @@
 	window.onload = function() {
 	     initSocketIO();
        iosocket.emit('getLastMessages',toDisplay);
-        };
+      };
 
   $(document).ready(function() {
-    //request last messages from server
-
-        $('#check').click(function() {
-            toggleVal += 1;
-	    toggleVal %= 2;
+      $('#check').click(function() {
 	    iosocket.emit('sendAT',toggleVal);
-	 });
+	    });
 	});
-    </script>
+</script>
+
   </head>
   <body>
-   <div style="text-align:center;">
-	<h2>Data from Sim900</h2>
-
-  <table id="mainTable" border="1" align="center">
+   <div style="text-align:center;" >
+	<h1 style="color:#000066;">SMS Message Board</h1>
+  <hr>
+  <br>
+  <h3>Send an SMS with a message to <span style="color:#3399ff;">+43 681 2033 4015</span></h3>
+  <br>
+  <table id="mainTable" border="1" align="center" class="table table-striped">
   <tr>
-  <td>Uhrzeit</td><td>Nummer</td><td>Nachricht</td>
+  <td><h4>Uhrzeit</h4></td><td><h4>Nummer</h4></td><td><h4>Nachricht</h4></td>
   </tr>
   </table>
+  <h3>Send an SMS with a message to <span style="color:#3399ff;">+43 681 2033 4015</span></h3>
+
   <br>
-  <br>
-	<h2>Debug functions</h2>
-	<div id="btnHolder">
+	<div style="display:none" id="btnHolder">
+    <h2>Debug functions</h2>
 	  <input type="checkbox" id="check" value="toggle"/><label for="check">Send AT</label>
 	</div>
   </body>
