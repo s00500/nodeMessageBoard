@@ -12,9 +12,10 @@ var SerialPort = serialport.SerialPort;
 var socketServer;
 var serialPort;
 var portName = '/dev/tty.usbmodemFD121'; //change this to your Arduino port
-var sendData = "";
+
 var numberStringRecieved = "";
 var numberRecieved = "";
+var timeRecieved = ""
 
 // handle contains locations to browse to (vote and poll); pathnames.
 function startServer(route,handle,debug)
@@ -45,10 +46,7 @@ function initSocketIO(httpServer,debug)
 	}
 	socketServer.on('connection', function (socket) {
 	console.log("user connected");
-	socket.emit('onconnection', {pollOneValue:sendData});
-	socketServer.on('update', function(data) {
-	socket.emit('updateData',{pollOneValue:data});
-	});
+	socket.emit('onconnection');
 
 	socket.on('sendAT', function(data) {
 		serialPort.write('AT\r');
@@ -57,11 +55,12 @@ function initSocketIO(httpServer,debug)
 
 	socket.on('getLastMessages', function(number) {
 		console.log('retrieving messages');
+	var times = db('messages').chain().takeRight(number).map('time').value();
 	var numbers = db('messages').chain().takeRight(number).map('number').value();
 	var messages = db('messages').chain().takeRight(number).map('message').value();
 
 	for(var i = 0; i < messages.length; i++){
-	socket.emit('newMessage',numbers[i],messages[i]);
+	socket.emit('newMessage',times[i],numbers[i],messages[i]);
   }
 	});
 
@@ -88,15 +87,17 @@ function serialListener(debug)
 		    if(data.startsWith("+CMT:")){ // if message ok
 					numberStringRecieved = data;
 					numberRecieved = data.substring(data.indexOf('+CMT: "') + 7, data.indexOf('",'));
+					timeRecieved = data.substring(data.indexOf('","","') + 15, data.indexOf('+04'));
 				} else if (data.length > 1) {
 
 					if(numberRecieved){
 						//console.log("emit");
-					 db('messages').push({ numberString: numberStringRecieved,number: numberRecieved, message: data });
+					 db('messages').push({ numberString: numberStringRecieved,number: numberRecieved, time: timeRecieved, message: data });
 					 //add a new message to the board directly
-           socketServer.emit('newMessage', numberRecieved,data);
+           socketServer.emit('newMessage', timeRecieved, numberRecieved, data);
 					 numberStringRecieved = null;
 					 numberRecieved = null;
+					 timeRecieved = null;
 				  }
 				  else {
           //console.log("nothing");

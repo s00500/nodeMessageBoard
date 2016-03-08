@@ -35,35 +35,41 @@
 	<script src="/socket.io/socket.io.js"></script>
     <script>
 
+  const toDisplay = 5; //define the number of messages to show
+
 	var iosocket;
-	var pollOneH = 0;
-	var poll1;
-	var text;
-	var potValue;
-	var prevPotValue;
+  var currentMessageCount = 0;
 	//var onOff = false;
 	var toggleVal = 0;
+
 
 
 	function initSocketIO()
 	{
 		iosocket = io.connect();
-		iosocket.on('onconnection', function(value) {
+		iosocket.on('onconnection', function() {
 		initButton();
 
 		iosocket.on('debugMessage', function(message) {
 			alert(message);
 		});
 
-     iosocket.on('newMessage', function(number,message) {
+     iosocket.on('newMessage', function(time,number,message) {
        var mainTable = document.getElementById("mainTable");
        var newRow = mainTable.insertRow(mainTable.rows.length);
        var dateCell = newRow.insertCell(0);
        var numberCell = newRow.insertCell(1);
        var textCell = newRow.insertCell(2);
-       dateCell.innerHTML = "Insert serverdate";
+       dateCell.innerHTML = time;
        numberCell.innerHTML = number;
        textCell.innerHTML = message;
+       currentMessageCount++;
+       if(currentMessageCount > toDisplay)
+       {
+         //Remove the top row
+         mainTable.deleteRow(1);
+        currentMessageCount--;
+       }
 	    });
     });
 	}
@@ -76,7 +82,7 @@
 
 	window.onload = function() {
 	     initSocketIO();
-       iosocket.emit('getLastMessages',10);
+       iosocket.emit('getLastMessages',toDisplay);
         };
 
   $(document).ready(function() {
