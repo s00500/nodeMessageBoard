@@ -3,6 +3,9 @@ http = require('http'),
 socketio = require('socket.io'),
 url = require("url"),
 serialport = require("serialport");
+low = require('lowdb'),
+storage = require('lowdb/file-async'),
+db = low('db.json', { storage });
 
 var SerialPort = serialport.SerialPort;
 
@@ -10,6 +13,7 @@ var socketServer;
 var serialPort;
 var portName = '/dev/tty.usbmodemFD121'; //change this to your Arduino port
 var sendData = "";
+var numberStringRecieved = "";
 var numberRecieved = "";
 
 // handle contains locations to browse to (vote and poll); pathnames.
@@ -45,10 +49,22 @@ function initSocketIO(httpServer,debug)
 	socketServer.on('update', function(data) {
 	socket.emit('updateData',{pollOneValue:data});
 	});
+
 	socket.on('sendAT', function(data) {
 		serialPort.write('AT\r');
 		console.log('sending AT...');
 	});
+
+	socket.on('getLastMessages', function(number) {
+		console.log('retrieving messages');
+	var numbers = db('messages').chain().takeRight(number).map('number').value();
+	var messages = db('messages').chain().takeRight(number).map('message').value();
+
+	for(var i = 0; i < messages.length; i++){
+	socket.emit('newMessage',numbers[i],messages[i]);
+  }
+	});
+
  });
 }
 
@@ -70,16 +86,20 @@ function serialListener(debug)
 					console.log("\r"); //+data.length
 				 // send the incoming data to clients using the socket.
 		    if(data.startsWith("+CMT:")){ // if message ok
-					numberRecieved = data;
+					numberStringRecieved = data;
+					numberRecieved = data.substring(data.indexOf('+CMT: "') + 7, data.indexOf('",'));
 				} else if (data.length > 1) {
-					//add a new message to the board directly
+
 					if(numberRecieved){
-						console.log("emit");
-           socketServer.emit('newMessage', numberRecieved+" "+data);
+						//console.log("emit");
+					 db('messages').push({ numberString: numberStringRecieved,number: numberRecieved, message: data });
+					 //add a new message to the board directly
+           socketServer.emit('newMessage', numberRecieved,data);
+					 numberStringRecieved = null;
 					 numberRecieved = null;
 				  }
 				  else {
-          console.log("nothing");
+          //console.log("nothing");
 				  }
         } else {
 					//debugMessages trigger an alert on the clients

@@ -49,23 +49,20 @@
 	{
 		iosocket = io.connect();
 		iosocket.on('onconnection', function(value) {
-		pollOneH = value.pollOneValue/2; // recieve start poll value from server
 		initButton();
 
-		// recieve changed values by other client from server
-		iosocket.on('updateData', function(recievedData) {
-			pollOneH = recievedData.pollOneValue/2; // recieve start poll value from server
+		iosocket.on('debugMessage', function(message) {
+			alert(message);
 		});
 
-     iosocket.on('newMessage', function(message) {
-      var date = new Date();
-
+     iosocket.on('newMessage', function(number,message) {
        var mainTable = document.getElementById("mainTable");
        var newRow = mainTable.insertRow(mainTable.rows.length);
-
        var dateCell = newRow.insertCell(0);
-       var textCell = newRow.insertCell(1);
-       dateCell.innerHTML = date.toLocaleString();
+       var numberCell = newRow.insertCell(1);
+       var textCell = newRow.insertCell(2);
+       dateCell.innerHTML = "Insert serverdate";
+       numberCell.innerHTML = number;
        textCell.innerHTML = message;
 	    });
     });
@@ -74,14 +71,17 @@
 
 	function initButton()
 	{
-	   $( "#check" ).button();
+	   $("#check").button();
 	}
 
 	window.onload = function() {
 	     initSocketIO();
+       iosocket.emit('getLastMessages',10);
         };
 
   $(document).ready(function() {
+    //request last messages from server
+
         $('#check').click(function() {
             toggleVal += 1;
 	    toggleVal %= 2;
@@ -91,23 +91,19 @@
     </script>
   </head>
   <body>
-   <div id="rData">
+   <div style="text-align:center;">
 	<h2>Data from Sim900</h2>
 
-  <table id="mainTable" border="1">
+  <table id="mainTable" border="1" align="center">
   <tr>
-  <td>Uhrzeit</td><td>Nachricht</td>
+  <td>Uhrzeit</td><td>Nummer</td><td>Nachricht</td>
   </tr>
   </table>
-
-   </div>
-       <div id="sData">
+  <br>
+  <br>
 	<h2>Debug functions</h2>
 	<div id="btnHolder">
-	  <input type="checkbox" id="check" value="toggle"/><label for="check">Toggle LED</label>
+	  <input type="checkbox" id="check" value="toggle"/><label for="check">Send AT</label>
 	</div>
-	<p id="sliderTxt">LED Dimmer</p>
-	<div id="slider"></div>
-   </div>
   </body>
 </html>
