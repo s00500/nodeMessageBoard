@@ -59,11 +59,15 @@
        iosocket.emit('getLastMessages',toDisplay);
       };
 
+
   $(document).ready(function() {
       $('#check').click(function() {
 	    iosocket.emit('sendAT',toggleVal);
 	    });
+       //$('#debugOut').html(String.fromCharCode(parseInt(s, 16),parseInt("DE03",16)));
 	});
+
+
 </script>
 
   </head>
@@ -82,9 +86,11 @@
   <h3>Send an SMS with a message to <span style="color:#3399ff;">+43 681 2033 4015</span></h3>
 
   <br>
-	<div style="display:none" id="btnHolder">
+	<div style="display:none;" id="btnHolder">
     <h2>Debug functions</h2>
 	  <input type="checkbox" id="check" value="toggle"/><label for="check">Send AT</label>
 	</div>
+
+   <div id="debugOut"> </div>
   </body>
 </html>

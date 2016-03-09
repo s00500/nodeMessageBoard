@@ -6,7 +6,7 @@ serialport = require("serialport");
 low = require('lowdb'),
 storage = require('lowdb/file-async'),
 db = low('db.json', { storage });
-
+const port = 3000;
 var SerialPort = serialport.SerialPort;
 
 var socketServer;
@@ -15,7 +15,18 @@ var portName = '/dev/tty.usbmodemFD121'; //change this to your Arduino port
 
 var numberStringRecieved = "";
 var numberRecieved = "";
-var timeRecieved = ""
+var timeRecieved = "";
+
+// utility function for ucs2 decode
+function ucs2Parse(ucs2){
+	codeArray = ucs2.match(/.{1,4}/g);
+	var returnString = "";
+	for(i=0;i<codeArray.length;i++){
+		returnString += String.fromCharCode(parseInt(codeArray[i], 16));
+	}
+	return returnString;
+}
+
 
 // handle contains locations to browse to (vote and poll); pathnames.
 function startServer(route,handle,debug)
@@ -30,8 +41,8 @@ function startServer(route,handle,debug)
 	  var content = route(handle,pathname,response,request,debug);
 	}
 
-	var httpServer = http.createServer(onRequest).listen(1337, function(){
-		console.log("Listening at: http://localhost:1337");
+	var httpServer = http.createServer(onRequest).listen(port, function(){
+		console.log("Listening at: http://localhost:"+port);
 		console.log("Server is up");
 	});
 	serialListener(debug);
@@ -87,14 +98,16 @@ function serialListener(debug)
 		    if(data.startsWith("+CMT:")){ // if message ok
 					numberStringRecieved = data;
 					numberRecieved = data.substring(data.indexOf('+CMT: "') + 7, data.indexOf('",'));
+					numberRecieved = ucs2Parse(numberRecieved);
 					timeRecieved = data.substring(data.indexOf('","","') + 15, data.indexOf('+04'));
 				} else if (data.length > 1) {
 
 					if(numberRecieved){
 						//console.log("emit");
-					 db('messages').push({ numberString: numberStringRecieved,number: numberRecieved, time: timeRecieved, message: data });
+          var messageRecieved = ucs2Parse(data);
+					 db('messages').push({ numberString: numberStringRecieved,number: numberRecieved, time: timeRecieved, message: messageRecieved });
 					 //add a new message to the board directly
-           socketServer.emit('newMessage', timeRecieved, numberRecieved, data);
+           socketServer.emit('newMessage', timeRecieved, numberRecieved, messageRecieved);
 					 numberStringRecieved = null;
 					 numberRecieved = null;
 					 timeRecieved = null;
