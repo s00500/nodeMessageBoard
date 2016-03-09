@@ -2,7 +2,7 @@
  <meta charset="UTF-8">
  <html>
   <head>
-
+<title>SMS Board</title>
   <!--<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />-->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
   <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
@@ -11,7 +11,7 @@
   </script>
 
 <script>
-  const toDisplay = 5; //define the number of messages to show
+  const toDisplay = 4; //define the number of messages to show
   var iosocket;
   var currentMessageCount = 0;
 
@@ -29,19 +29,27 @@
 
      iosocket.on('newMessage', function(time,number,message) {
        var censoredNumber = number.substring(0,3) + "********" +number.substring(number.length - 3, number.length);
-       var mainTable = document.getElementById("mainTable");
-       var newRow = mainTable.insertRow(mainTable.rows.length);
-       var dateCell = newRow.insertCell(0);
-       var numberCell = newRow.insertCell(1);
-       var textCell = newRow.insertCell(2);
-       dateCell.innerHTML = time;
-       numberCell.innerHTML = censoredNumber;
-       textCell.innerHTML = message;
+
+       var messages = document.getElementById('messagesBody');
+       var newDiv = document.createElement('div');
+       var newH1 = document.createElement('h1');
+       var newP = document.createElement('p');
+       newH1.innerHTML = message;
+       newP.innerHTML = "by "+censoredNumber+" at "+time;
+       newDiv.style="background:#428bca !important; padding:10px 0;";
+       newDiv.className="jumbotron";
+       newDiv.appendChild(newH1);
+       newDiv.appendChild(newP);
+       messages.appendChild(newDiv);
+
+
        currentMessageCount++;
        if(currentMessageCount > toDisplay)
        {
          //Remove the top row
-         mainTable.deleteRow(1);
+         $('#messagesBody').find('div').first().remove();
+         //messages.removeChild(messages.firstChild);
+         //mainTable.deleteRow(1);
         currentMessageCount--;
        }
 	    });
@@ -73,18 +81,16 @@
   </head>
   <body>
    <div style="text-align:center;" >
-	<h1 style="color:#000066;">SMS Message Board</h1>
-  <hr>
-  <br>
+	<!--<h1 style="color:#000066;">SMS Message Board</h1>-->
+
   <h3>Send an SMS with a message to <span style="color:#3399ff;">+43 681 2033 4015</span></h3>
   <br>
-  <table id="mainTable" border="1" align="center" class="table table-striped">
-  <tr>
-  <td><h4>Uhrzeit</h4></td><td><h4>Nummer</h4></td><td><h4>Nachricht</h4></td>
-  </tr>
-  </table>
+  <div id="messagesBody">
+
+  </div>
   <h3>Send an SMS with a message to <span style="color:#3399ff;">+43 681 2033 4015</span></h3>
 
+  <br>
   <br>
 	<div style="display:none;" id="btnHolder">
     <h2>Debug functions</h2>
