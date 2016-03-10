@@ -2,6 +2,7 @@
  <meta charset="UTF-8">
  <html>
   <head>
+
 <title>SMS Board</title>
   <!--<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />-->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
@@ -9,12 +10,61 @@
 	<script src="http://code.jquery.com/ui/1.9.2/jquery-ui.js"></script>
 	<script src="/socket.io/socket.io.js">
   </script>
+<style>
+/* Sticky footer styles
+-------------------------------------------------- */
+
+html,
+body {
+  height: 100%;
+  /* The html and body elements cannot have any padding or margin. */
+}
+
+/* Wrapper for page content to push down footer */
+#wrap {
+  min-height: 100%;
+  height: auto;
+  /* Negative indent footer by its height */
+  margin: 0 auto -60px;
+  /* Pad bottom by footer height */
+  padding: 0 0 60px;
+}
+
+/* Set the fixed height of the footer here */
+#footer {
+  height: 100px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+}
+</style>
+
 
 <script>
   const toDisplay = 4; //define the number of messages to show
   var iosocket;
   var currentMessageCount = 0;
+  var newDiv;
 
+  function getColor(num){
+    switch(num){
+      case 0:
+      return  "#428bca"; //blue
+      break;
+      case 1:
+      return  "#5cb85c"; //green
+      break;
+      case 2:
+      return  "#5bc0de"; //lightblue
+      break;
+      case 3:
+      return  "#f0ad4e"; //orange
+      break;
+      case 4:
+      return  "#d9534f"; //red
+      break;
+    }
+  }
 
 
 	function initSocketIO()
@@ -26,32 +76,37 @@
 		iosocket.on('debugMessage', function(message) {
 			alert(message);
 		});
+     iosocket.on('newMessage', function(time,number,message,color) {
 
-     iosocket.on('newMessage', function(time,number,message) {
+
        var censoredNumber = number.substring(0,3) + "********" +number.substring(number.length - 3, number.length);
-
        var messages = document.getElementById('messagesBody');
-       var newDiv = document.createElement('div');
+       newDiv = document.createElement('div');
        var newH1 = document.createElement('h1');
        var newP = document.createElement('p');
        newH1.innerHTML = message;
        newP.innerHTML = "by "+censoredNumber+" at "+time;
-       newDiv.style="background:#428bca !important; padding:10px 0;";
+       newDiv.style="background:"+getColor(color)+" !important; padding:10px 0; margin:10px 0;";
        newDiv.className="jumbotron";
        newDiv.appendChild(newH1);
        newDiv.appendChild(newP);
-       messages.appendChild(newDiv);
-
+       //messages.appendChild(newDiv);
 
        currentMessageCount++;
        if(currentMessageCount > toDisplay)
        {
-         //Remove the top row
-         $('#messagesBody').find('div').first().remove();
+         //Remove the top div
+         $('#messagesBody').find('div').first().slideUp(function() {
+         $(this).remove();
+         document.getElementById('messagesBody').appendChild(newDiv);
+         });
+         //$('#messagesBody').find('div').first().remove();
          //messages.removeChild(messages.firstChild);
-         //mainTable.deleteRow(1);
         currentMessageCount--;
+       }else{
+         document.getElementById('messagesBody').appendChild(newDiv);
        }
+
 	    });
     });
 	}
@@ -79,24 +134,25 @@
 </script>
 
   </head>
-  <body>
+  <body style="/*background-color: #D4D4D4;*/">
    <div style="text-align:center;" >
 	<!--<h1 style="color:#000066;">SMS Message Board</h1>-->
-
-  <h3>Send an SMS with a message to <span style="color:#3399ff;">+43 681 2033 4015</span></h3>
-  <br>
+  
+  <h2>Send an SMS with a message to <span style="color:#3399ff;">+43 681 2033 4015</span></h2>
+  <div id="wrap">
   <div id="messagesBody">
-
   </div>
-  <h3>Send an SMS with a message to <span style="color:#3399ff;">+43 681 2033 4015</span></h3>
 
   <br>
   <br>
 	<div style="display:none;" id="btnHolder">
     <h2>Debug functions</h2>
 	  <input type="checkbox" id="check" value="toggle"/><label for="check">Send AT</label>
+    <div id="debugOut"> </div>
 	</div>
-
-   <div id="debugOut"> </div>
+</div>
+<div id="footer">
+<h2>Send an SMS with a message to <span style="color:#3399ff;">+43 681 2033 4015</span></h2>
+</div>
   </body>
 </html>
