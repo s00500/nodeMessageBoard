@@ -34,7 +34,8 @@ function startServer(route,handle,debug)
 {
 
   db('messages').size(); //call this once to establish the db if there is nothing in the json file
-  if(db('messages').size() == 0)db('messages').push({ numberString: "",number: "+43 681 2033 4015", time: "now", message: "SMS MessageBoard",color: 0 });
+  var mynumber = config('mainConfig').chain().find({ param: 'mynumber' }).value()['value'];
+  if(db('messages').size() == 0)db('messages').push({ numberString: "",number: mynumber, time: "now", message: "SMS MessageBoard",color: 0 });
 
 	// on request event
 	function onRequest(request, response) {
