@@ -1,0 +1,20 @@
+{
+  "mainConfig": [
+    {
+      "param": "serialport",
+      "value": "/dev/tty.usbmodemFD121"
+    },
+    {
+      "param": "pincode",
+      "value": "0000"
+    },
+    {
+      "param": "port",
+      "value": "3000"
+    },
+    {
+      "param": "mynumber",
+      "value": "+43************"
+    }
+  ]
+}

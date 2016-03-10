@@ -45,6 +45,7 @@ body {
   var iosocket;
   var currentMessageCount = 0;
   var newDiv;
+  var mynumber;
 
   function getColor(num){
     switch(num){
@@ -73,12 +74,17 @@ body {
 		iosocket.on('onconnection', function() {
 		initButton();
 
-		iosocket.on('debugMessage', function(message) {
-			alert(message);
-		});
+	  	iosocket.on('debugMessage', function(message) {
+	  		alert(message);
+		  });
+
+      iosocket.on('config', function(phonenumber) {
+  			mynumber = phonenumber;
+        $( "span.number" ).html(mynumber);
+        console.log(mynumber);
+  		});
+
      iosocket.on('newMessage', function(time,number,message,color) {
-
-
        var censoredNumber = number.substring(0,3) + "********" +number.substring(number.length - 3, number.length);
        var messages = document.getElementById('messagesBody');
        newDiv = document.createElement('div');
@@ -90,7 +96,6 @@ body {
        newDiv.className="jumbotron";
        newDiv.appendChild(newH1);
        newDiv.appendChild(newP);
-       //messages.appendChild(newDiv);
 
        currentMessageCount++;
        if(currentMessageCount > toDisplay)
@@ -100,8 +105,6 @@ body {
          $(this).remove();
          document.getElementById('messagesBody').appendChild(newDiv);
          });
-         //$('#messagesBody').find('div').first().remove();
-         //messages.removeChild(messages.firstChild);
         currentMessageCount--;
        }else{
          document.getElementById('messagesBody').appendChild(newDiv);
@@ -120,6 +123,7 @@ body {
 	window.onload = function() {
 	     initSocketIO();
        iosocket.emit('getLastMessages',toDisplay);
+       iosocket.emit('getConfig');
       };
 
 
@@ -127,7 +131,6 @@ body {
       $('#check').click(function() {
 	    iosocket.emit('sendAT',toggleVal);
 	    });
-       //$('#debugOut').html(String.fromCharCode(parseInt(s, 16),parseInt("DE03",16)));
 	});
 
 
@@ -136,9 +139,8 @@ body {
   </head>
   <body style="/*background-color: #D4D4D4;*/">
    <div style="text-align:center;" >
-	<!--<h1 style="color:#000066;">SMS Message Board</h1>-->
-  
-  <h2>Send an SMS with a message to <span style="color:#3399ff;">+43 681 2033 4015</span></h2>
+
+  <h2>Send an SMS with a message to <span class="number" style="color:#3399ff;"></span></h2>
   <div id="wrap">
   <div id="messagesBody">
   </div>
@@ -152,7 +154,7 @@ body {
 	</div>
 </div>
 <div id="footer">
-<h2>Send an SMS with a message to <span style="color:#3399ff;">+43 681 2033 4015</span></h2>
+<h2>Send an SMS with a message to <span class="number" style="color:#3399ff;"></span></h2>
 </div>
   </body>
 </html>

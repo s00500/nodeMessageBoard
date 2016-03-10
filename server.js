@@ -6,12 +6,12 @@ serialport = require("serialport");
 low = require('lowdb'),
 storage = require('lowdb/file-async'),
 db = low('db.json', { storage });
-const port = 3000;
 var SerialPort = serialport.SerialPort;
-
+var config = low('config.json', { storage });
 var socketServer;
+var port = config('mainConfig').chain().find({ param: 'port' }).value()['value'];
 var serialPort;
-var portName = '/dev/tty.usbmodemFD121'; //change this to your Arduino port
+var portName = config('mainConfig').chain().find({ param: 'serialport' }).value()['value'];
 
 var numberStringRecieved = "";
 var numberRecieved = "";
@@ -63,6 +63,11 @@ function initSocketIO(httpServer,debug)
 	socketServer.on('connection', function (socket) {
 	console.log("user connected");
 	socket.emit('onconnection');
+
+	socket.on('getConfig', function(data) {
+		var number = config('mainConfig').chain().find({ param: 'mynumber' }).value()['value'];
+		socket.emit('config',number);
+	});
 
 	socket.on('sendAT', function(data) {
 		serialPort.write('AT\r');
@@ -131,8 +136,8 @@ function serialListener(debug)
 		 	    //socketServer.emit('debugMessage', data);
 		      }
         });
-
-			serialPort.write('AT+CPIN=3797\r');
+			var pincode = config('mainConfig').chain().find({ param: 'pincode' }).value()['value'];
+			serialPort.write('AT+CPIN='+pincode+'\r');
 			console.log("Sent Pincode...");
     });
 }
