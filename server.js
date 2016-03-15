@@ -127,7 +127,7 @@ function serialListener(debug)
           var messageRecieved = ucs2Parse(data);
 					 db('messages').push({ numberString: numberStringRecieved,number: numberRecieved, time: timeRecieved, message: messageRecieved,color: color });
 					 //add a new message to the board directly
-           socketServer.emit('newMessage', timeRecieved, numberRecieved, messageRecieved,color);
+           socketServer.emit('newMessage', timeRecieved, numberRecieved, convert(messageRecieved),color);
 					 numberStringRecieved = null;
 					 numberRecieved = null;
 					 timeRecieved = null;

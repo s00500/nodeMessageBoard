@@ -12,19 +12,45 @@ function sendInterface(response) {
   response.end(html);
 }
 
-function sendCss(response) {
-  console.log("Request handler 'css' was called.");
+function sendEmojiCss(response) {
+  console.log("Request handler 'Emojicss' was called.");
   response.writeHead(200, {"Content-Type": "text/css"});
   var html = fs.readFileSync(__dirname + "/served/emoji.css")
   response.end(html);
 }
-function sendPng(response) {
-  console.log("Request handler 'png' was called.");
+
+function sendEmojiPng(response) {
+  console.log("Request handler 'Emojipng' was called.");
   response.writeHead(200, {"Content-Type": "image/png"});
   var html = fs.readFileSync(__dirname + "/served/emoji.png")
   response.end(html);
 }
 
-exports.sendPng = sendPng;
-exports.sendCss = sendCss;
+function sendBootstrap(response) {
+  console.log("Request handler 'css' was called.");
+  response.writeHead(200, {"Content-Type": "text/css"});
+  var html = fs.readFileSync(__dirname + "/served/bootstrap.min.css")
+  response.end(html);
+}
+
+function sendJquery(response) {
+  console.log("Request handler 'jquery' was called.");
+  response.writeHead(200, {"Content-Type": "application/javascript"});
+  var html = fs.readFileSync(__dirname + "/served/jquery-1.12.1.min.js")
+  response.end(html);
+}
+
+function sendJqueryUI(response) {
+  console.log("Request handler 'jqueryUI' was called.");
+  response.writeHead(200, {"Content-Type": "application/javascript"});
+  var html = fs.readFileSync(__dirname + "/served/jquery-ui.js")
+  response.end(html);
+}
+
+
+exports.sendBootstrap = sendBootstrap;
+exports.sendJqueryUI = sendJqueryUI;
+exports.sendJquery = sendJquery;
+exports.sendEmojiPng = sendEmojiPng;
+exports.sendEmojiCss = sendEmojiCss;
 exports.sendInterface = sendInterface;
