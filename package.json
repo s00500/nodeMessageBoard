@@ -4,6 +4,7 @@
   "description": "A SMS Messageboard built using node and express",
   "main": "app.js",
   "dependencies": {
+    "emojize": "^0.2.0",
     "lowdb": "^0.12.5",
     "serialport": "^2.0.6",
     "socket.io": "^1.4.5"

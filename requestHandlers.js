@@ -12,4 +12,19 @@ function sendInterface(response) {
   response.end(html);
 }
 
+function sendCss(response) {
+  console.log("Request handler 'css' was called.");
+  response.writeHead(200, {"Content-Type": "text/css"});
+  var html = fs.readFileSync(__dirname + "/served/emoji.css")
+  response.end(html);
+}
+function sendPng(response) {
+  console.log("Request handler 'png' was called.");
+  response.writeHead(200, {"Content-Type": "image/png"});
+  var html = fs.readFileSync(__dirname + "/served/emoji.png")
+  response.end(html);
+}
+
+exports.sendPng = sendPng;
+exports.sendCss = sendCss;
 exports.sendInterface = sendInterface;
