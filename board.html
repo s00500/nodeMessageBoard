@@ -71,8 +71,14 @@ body {
 	function initSocketIO()
 	{
 		iosocket = io.connect();
+
+    iosocket.on('clientrefresh', function() {
+      location.reload();
+    });
+
 		iosocket.on('onconnection', function() {
-		initButton();
+
+
 
 	  	iosocket.on('debugMessage', function(message) {
 	  		alert(message);
@@ -81,8 +87,8 @@ body {
       iosocket.on('config', function(phonenumber) {
   			mynumber = phonenumber;
         $( "span.number" ).html(mynumber);
-        console.log(mynumber);
   		});
+
 
      iosocket.on('newMessage', function(time,number,message,color) {
        var censoredNumber = number.substring(0,3) + "********" +number.substring(number.length - 3, number.length);

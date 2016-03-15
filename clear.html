@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+ <meta charset="UTF-8">
+ <html>
+  <head>
+<title>Clear Board</title>
+  <link rel='stylesheet' href='sprite/emoji.css' >
+  <link rel="stylesheet" href="/css/bootstrap.min.css" />
+  <script src="/js/jquery-1.12.1.min"></script>
+  <script src="/js/jquery-ui.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+
+<script>
+  var iosocket;
+
+	function initSocketIO()
+	{
+		iosocket = io.connect();
+		iosocket.on('onconnection', function() {
+
+	  	iosocket.on('debugMessage', function(message) {
+	  		alert(message);
+		  });
+
+
+    });
+	}
+
+
+
+	window.onload = function() {
+	     initSocketIO();
+      };
+
+
+  $(document).ready(function() {
+      $('#clear').click(function() {
+      var number = $('#number').val();
+	    iosocket.emit('clear',number);
+	    });
+      $('#refresh').click(function() {
+      iosocket.emit('refreshClients');
+      });
+	});
+
+
+</script>
+  </head>
+  <body>
+   <div style="text-align:center;" >
+  <div id="wrap">
+	<div  id="btnHolder">
+    <h2>Functions</h2>
+    <input type="number" id="number" value="1" min="1"/><label for="number">Number</label><br>
+	  <input type="button" id="clear" value="clear"/>
+    <br>
+    <input type="button" id="refresh" value="refresh"/>
+    <div id="debugOut"> </div>
+	</div>
+</div>
+
+  </body>
+</html>

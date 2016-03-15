@@ -13,4 +13,6 @@ handle["/js/jquery-1.12.1.min"] = requestHandlers.sendJquery;
 handle["/js/jquery-ui.js"] = requestHandlers.sendJqueryUI;
 handle["/css/bootstrap.min.css"] = requestHandlers.sendBootstrap;
 
+handle["/clear"] = requestHandlers.sendClear;
+
 server.start(router.route,handle,debug);

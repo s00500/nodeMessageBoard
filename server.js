@@ -68,6 +68,16 @@ function initSocketIO(httpServer,debug)
 	console.log("user connected");
 	socket.emit('onconnection');
 
+
+  socket.on('clear', function(number) {
+
+		var index = db.object.messages.length - 1;
+		db.object.messages.splice(index,1);
+    db.write();
+
+		console.log('removed entry ' + number)
+  });
+
 	socket.on('getConfig', function(data) {
 		var number = config('mainConfig').chain().find({ param: 'mynumber' }).value()['value'];
 		socket.emit('config',number);
@@ -76,6 +86,11 @@ function initSocketIO(httpServer,debug)
 	socket.on('sendAT', function(data) {
 		serialPort.write('AT\r');
 		console.log('sending AT...');
+	});
+
+	socket.on('refreshClients', function() {
+		console.log('Refreshing all clients');
+		socketServer.emit('clientrefresh'); // send this to all so use socketServer
 	});
 
 	socket.on('getLastMessages', function(number) {

@@ -47,6 +47,16 @@ function sendJqueryUI(response) {
   response.end(html);
 }
 
+function sendClear(response) {
+  console.log("Request handler 'clear' was called.");
+  response.writeHead(200, {"Content-Type": "text/html"});
+  var html = fs.readFileSync(__dirname + "/clear.html")
+  response.end(html);
+}
+
+
+exports.sendClear = sendClear;
+
 
 exports.sendBootstrap = sendBootstrap;
 exports.sendJqueryUI = sendJqueryUI;
