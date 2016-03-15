@@ -1,5 +1,6 @@
 # messageBoard config
 config.json
+db.json
 
 # Logs
 logs
