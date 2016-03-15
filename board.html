@@ -98,7 +98,8 @@ body {
        var newP = document.createElement('p');
        newH1.innerHTML = message;
        newP.innerHTML = "by "+censoredNumber+" at "+time;
-       newDiv.style="background:"+getColor(color)+" !important; padding:10px 0; margin:10px 0;";
+       newDiv.style.backgroundColor = getColor(color); //need this on both for some browsers (especially safari) to recognize...
+       newDiv.style="background-color:"+getColor(color)+" !important; padding:10px 0; margin:10px 0;";
        newDiv.className="jumbotron";
        newDiv.appendChild(newH1);
        newDiv.appendChild(newP);

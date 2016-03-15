@@ -36,6 +36,7 @@
       $('#clear').click(function() {
       var number = $('#number').val();
 	    iosocket.emit('clear',number);
+      alert("cleared");
 	    });
       $('#refresh').click(function() {
       iosocket.emit('refreshClients');

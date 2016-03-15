@@ -71,7 +71,7 @@ function initSocketIO(httpServer,debug)
 
   socket.on('clear', function(number) {
 
-		var index = db.object.messages.length - 1;
+		var index = db.object.messages.length - number;
 		db.object.messages.splice(index,1);
     db.write();
 
