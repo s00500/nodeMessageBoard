@@ -31,6 +31,18 @@ function ucs2Parse(ucs2){
 	return returnString;
 }
 
+// utility function for escaping HTML tags
+function escapeHtml(unsafe) {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+ }
+
+
+
 
 // handle contains locations to browse to (vote and poll); pathnames.
 function startServer(route,handle,debug)
@@ -139,7 +151,7 @@ function serialListener(debug)
 						if (color == null)color = 0;//no messages yet
 						color++;
 						if(color > 4) color = 0;
-          var messageRecieved = ucs2Parse(data);
+          var messageRecieved = escapeHtml(ucs2Parse(data));
 					 db('messages').push({ numberString: numberStringRecieved,number: numberRecieved, time: timeRecieved, message: messageRecieved,color: color });
 					 //add a new message to the board directly
            socketServer.emit('newMessage', timeRecieved, numberRecieved, convert(messageRecieved),color);
