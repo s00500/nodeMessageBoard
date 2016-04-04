@@ -141,7 +141,7 @@ function serialListener(debug)
 					numberStringRecieved = data;
 					numberRecieved = data.substring(data.indexOf('+CMT: "') + 7, data.indexOf('",'));
 					numberRecieved = ucs2Parse(numberRecieved);
-					timeRecieved = data.substring(data.indexOf('","","') + 15, data.indexOf('+04'));
+					timeRecieved = data.substring(data.indexOf('","","') + 15, data.indexOf('+0')); // the end of this string has to do with time zone and daylightsaving time mode
 				} else if (data.length > 1) {
 
 					if(numberRecieved){
