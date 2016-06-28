@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=320, initial-scale=1">
+  <title>Chat</title>
+  <script src="/js/jquery-1.12.1.min"></script>
+  <script src="/js/jquery-ui.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+
+<script type="text/javascript">
+  var iosocket;
+
+	function initSocketIO()
+	{
+		iosocket = io.connect();
+
+		iosocket.on('connect', function() {
+    createSystemMessage('[Connected]');
+    console.log("connect");
+
+
+    iosocket.on('debugMessage', function(message) {
+	  	alert(message);
+		});
+    iosocket.on('disconnect', function() {
+    createSystemMessage('[Disconnected]');
+    });
+
+    });
+
+	}
+
+
+
+	window.onload = function() {
+	     initSocketIO();
+      };
+
+
+  function createSystemMessage(message) {
+    var message = document.createTextNode(message);
+
+    var messageBox = document.createElement('p');
+    messageBox.className = 'system';
+
+    messageBox.appendChild(message);
+
+    var chat = document.getElementById('chat_box');
+    chat.appendChild(messageBox);
+  }
+
+  function createUserMessage(user, message) {
+    var user = document.createTextNode(user + ': ');
+
+    var userBox = document.createElement('span');
+    userBox.className = 'username';
+    userBox.appendChild(user);
+
+    var message = document.createTextNode(message);
+
+    var messageBox = document.createElement('p');
+    messageBox.appendChild(userBox);
+    messageBox.appendChild(message);
+
+    var chat = document.getElementById('chat_box');
+    chat.appendChild(messageBox);
+  }
+
+
+  function sendMessage() {
+    var user = document.getElementById('user');
+    var message = document.getElementById('message');
+    var number = document.getElementById('number');
+    var currentDate = new Date();
+    var time = currentDate.toLocaleTimeString();
+    var date = currentDate.getDate()+"/"+currentDate.getMonth()+"/"+currentDate.getFullYear();
+
+    iosocket.emit('demoMessage',number.value.toString(),date,time,message.value);
+    createUserMessage(time,message.value);
+    message.value = "";
+  };
+
+  // added a little wrapper for enter submit
+  function submitEnter(e){
+   if (( e.keyCode == 13 )&&(e.shiftKey === false)) {
+     sendMessage();
+   }
+
+ }
+
+
+</script>
+
+<body>
+  <div id="wrapper">
+    <div id="chat_box" class="content"></div>
+
+    <div id="footer">
+      <div class="content">
+        <input type="text" id="number"  value="+4301234567890" />
+        <input type="text" id="message" onkeypress="return submitEnter(event)" placeholder="Enter a Test Message! (Or emoji!, google if if you don't know how)" />
+        <input type="button" id="send_btn" value="Send"  onclick="sendMessage()">
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
+<style type="text/css">
+  * {
+    font-family: "Arial";
+    font-size: 24px;
+  }
+
+  html, body, #wrapper {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+
+  #wrapper {
+    background-color: #ecf0f1;
+  }
+
+  #chat_box {
+    box-sizing: border-box;
+    height: 100%;
+    overflow: auto;
+    padding-bottom: 50px;
+  }
+
+  #footer {
+    box-sizing: border-box;
+    position: fixed;
+    bottom: 0;
+    height: 50px;
+    width: 100%;
+    background-color: #2980b9;
+  }
+
+  #footer .content {
+    padding-top: 4px;
+    position: relative;
+  }
+
+  #user { width: 20%; }
+  #message { width: 68%; }
+  #send_btn {
+    width: 10%;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+  }
+
+  .content {
+    width: 70%;
+    margin: 0 auto;
+  }
+
+  input[type="text"],
+  input[type="button"] {
+    border: 0;
+    color: #fff;
+  }
+
+  input[type="text"] {
+    background-color: #146EA8;
+    padding: 3px 10px;
+  }
+
+  input[type="button"] {
+    background-color: #f39c12;
+    border-right: 2px solid #e67e22;
+    border-bottom: 2px solid #e67e22;
+    min-width: 70px;
+    display: inline-block;
+  }
+
+  input[type="button"]:hover {
+    background-color: #e67e22;
+    border-right: 2px solid #f39c12;
+    border-bottom: 2px solid #f39c12;
+    cursor: pointer;
+  }
+
+  .system,
+  .username {
+    color: #aaa;
+    font-style: italic;
+    font-family: monospace;
+    font-size: 16px;
+  }
+
+  @media(max-width: 1000px) {
+    .content { width: 90%; }
+  }
+
+  @media(max-width: 780px) {
+    #footer { height: 91px; }
+    #chat_box { padding-bottom: 91px; }
+
+    #user { width: 100%; }
+    #message { width: 80%; }
+  }
+
+  @media(max-width: 400px) {
+    #footer { height: 135px; }
+    #chat_box { padding-bottom: 135px; }
+
+    #message { width: 100%; }
+    #send_btn {
+      position: relative;
+      margin-top: 3px;
+      width: 100%;
+    }
+  }
+</style>
