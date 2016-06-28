@@ -21,6 +21,8 @@ var numberRecieved = "";
 var timeRecieved = "";
 var color = 0;
 
+module.exports.demoMode  = 1;
+
 // utility function for ucs2 decode
 function ucs2Parse(ucs2){
 	codeArray = ucs2.match(/.{1,4}/g);
@@ -106,7 +108,7 @@ function initSocketIO(httpServer,debug)
 	});
 
 	socket.on('getLastMessages', function(number) {
-		console.log('retrieving messages');
+	console.log('retrieving messages');
 	var times = db('messages').chain().takeRight(number).map('time').value();
 	var numbers = db('messages').chain().takeRight(number).map('number').value();
 	var messages = db('messages').chain().takeRight(number).map('message').value();
@@ -117,6 +119,26 @@ function initSocketIO(httpServer,debug)
   }
 	});
 
+  socket.on('demoMessage', function(number,date,time,message) {
+					numberStringRecieved = "Date: "+date+" demo#demo#demo#demo";
+					numberRecieved = number;
+					console.log(numberRecieved);
+					timeRecieved = time;
+						var color = db('messages').chain().takeRight(1).map('color').value();
+						if (color == null)color = 0;//no messages yet
+						color++;
+						if(color > 4) color = 0;
+						console.log(message);
+          var messageRecieved = escapeHtml(message);
+					 db('messages').push({ numberString: numberStringRecieved,number: numberRecieved, time: timeRecieved, message: messageRecieved,color: color });
+					 //add a new message to the board directly
+           socketServer.emit('newMessage', timeRecieved, numberRecieved, convert(messageRecieved),color);
+					 numberStringRecieved = null;
+					 numberRecieved = null;
+					 timeRecieved = null;
+					 data=null;
+	});
+
  });
 }
 
@@ -124,12 +146,22 @@ function initSocketIO(httpServer,debug)
 function serialListener(debug)
 {
     var receivedData = "";
+
     serialPort = new SerialPort(portName, {
         baudrate: 19200,
 				parser: serialport.parsers.readline("\n")
-    });
+    },false); //don't open imedeatly
 
-    serialPort.on("open", function () {
+		serialPort.open(function (err) {
+  if (err) {
+
+    return console.log('Error opening port: ', err.message,'###   ENABELED DEMOMODE under /demo !   ##############');
+  }
+	if (err) {
+				module.exports.demoMode  = 1;
+				return console.log('Error opening port: ', err.message,'###   ENABELED DEMOMODE under /demo !   ##############');
+			}
+
       console.log('opened serial communication');
 
         serialPort.on('data', function(data) {
@@ -147,7 +179,7 @@ function serialListener(debug)
 					if(numberRecieved){
 						//console.log("emit");
 						var color = db('messages').chain().takeRight(1).map('color').value();
-						console.log(JSON.stringify(color));
+						//console.log(JSON.stringify(color));
 						if (color == null)color = 0;//no messages yet
 						color++;
 						if(color > 4) color = 0;
@@ -158,6 +190,7 @@ function serialListener(debug)
 					 numberStringRecieved = null;
 					 numberRecieved = null;
 					 timeRecieved = null;
+					 data=null;
 				  }
 				  else {
           //console.log("nothing");
@@ -167,6 +200,7 @@ function serialListener(debug)
 		 	    //socketServer.emit('debugMessage', data);
 		      }
         });
+
 			var pincode = config('mainConfig').chain().find({ param: 'pincode' }).value()['value'];
 			serialPort.write('AT+CPIN='+pincode+'\r');
 			console.log("Sent Pincode...");

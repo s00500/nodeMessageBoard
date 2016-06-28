@@ -15,7 +15,7 @@
 	function initSocketIO()
 	{
 		iosocket = io.connect();
-		iosocket.on('onconnection', function() {
+		iosocket.on('connect', function() {
 
 	  	iosocket.on('debugMessage', function(message) {
 	  		alert(message);
