@@ -5,6 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "async": "^2.0.0-rc.6",
+    "badwords": "^1.0.0",
     "emojize": "^0.2.0",
     "lowdb": "^0.12.5",
     "serialport": "^4.0.5",
