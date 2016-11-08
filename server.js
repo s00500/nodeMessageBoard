@@ -2,14 +2,12 @@ var fs = require('fs'),
 http = require('http'),
 socketio = require('socket.io'),
 url = require("url"),
-serialport = require("serialport");
+SerialPort = require("serialport");
 low = require('lowdb'),
 storage = require('lowdb/file-async'),
 db = low('db.json', { storage });
 
 var convert = require('emojize').emojize;
-
-var SerialPort = serialport.SerialPort;
 var config = low('config.json', { storage });
 var socketServer;
 var port = config('mainConfig').chain().find({ param: 'port' }).value()['value'];
@@ -126,7 +124,7 @@ function serialListener(debug)
     var receivedData = "";
     serialPort = new SerialPort(portName, {
         baudrate: 19200,
-				parser: serialport.parsers.readline("\n")
+				parser: SerialPort.parsers.readline("\n")
     });
 
     serialPort.on("open", function () {
