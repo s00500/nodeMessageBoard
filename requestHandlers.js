@@ -50,12 +50,19 @@ function sendJqueryUI(response) {
 function sendClear(response) {
   console.log("Request handler 'clear' was called.");
   response.writeHead(200, {"Content-Type": "text/html"});
-  var html = fs.readFileSync(__dirname + "/clear.html")
+  var html = fs.readFileSync(__dirname + "/clear.html");
   response.end(html);
 }
 
+function sendDemo(response) {
+  console.log("Request handler 'demo' was called.");
+    response.writeHead(200, {"Content-Type": "text/html"});
+    var html = fs.readFileSync(__dirname + "/demo.html");
+    response.end(html);
+}
 
 exports.sendClear = sendClear;
+exports.sendDemo = sendDemo;
 
 
 exports.sendBootstrap = sendBootstrap;
