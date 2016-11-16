@@ -7,14 +7,8 @@
     "async": "^2.0.0-rc.6",
     "emojize": "^0.2.0",
     "lowdb": "^0.12.5",
-<<<<<<< HEAD
     "serialport": "^4.0.5",
-    "socket.io": "^1.4.5"
-=======
-    "nan": "^2.3.5",
-    "serialport": "^2.0.6",
     "socket.io": "^1.4.8"
->>>>>>> 754c9a7bd9436bf6309b8a11822ff7b2e3014aee
   },
   "devDependencies": {},
   "scripts": {

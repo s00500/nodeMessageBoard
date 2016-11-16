@@ -147,12 +147,9 @@ function serialListener(debug)
 
     serialPort = new SerialPort(portName, {
         baudrate: 19200,
-<<<<<<< HEAD
-				parser: SerialPort.parsers.readline("\n")
+				parser: SerialPort.parsers.readline("\n"),
+				autoOpen: false //don't open imediatly
     });
-=======
-				parser: serialport.parsers.readline("\n")
-    },false); //don't open imedeatly
 
 		serialPort.open(function (err) {
   if (err) {
@@ -163,7 +160,6 @@ function serialListener(debug)
 				module.exports.demoMode  = 1;
 				return console.log('Error opening port: ', err.message,'###   ENABELED DEMOMODE under /demo !   ##############');
 			}
->>>>>>> 754c9a7bd9436bf6309b8a11822ff7b2e3014aee
 
       console.log('opened serial communication');
 
